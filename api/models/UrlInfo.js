@@ -9,7 +9,7 @@ const UrlInfo = mongoose.model("UrlInfo", {
     type: String,
     required: true,
   },
-  shortUrl: {
+  short: {
     type: String,
     required: false,
   },
