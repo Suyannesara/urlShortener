@@ -1,27 +1,38 @@
 require("dotenv").config();
 const express = require("express");
-const mongoose = require("mongoose");
 const connectToDb = require("./database");
-// const shortUrl = require("./models/shortUrl");
+const UrlInfo = require("./models/UrlInfo");
 
 //connect to database
 connectToDb();
 
 const app = express();
-//app.use(express.urlencoded({ extended: false }));
 
 //Routes
 app.get("/", (req, res) => {
   res.send("Oi guria");
 });
 
-// app.post("/bigUrl", (req, res) => {
-//   shortUrl.create({
-//     bigUrl: req.body.bigUrl,
-//   });
+app.post("/urlInfo", async (req, res) => {
+  //extracting data from the body
+  const { longUrl, keyword, shortUrl, clicks } = req.body;
 
-//   res.send(req.body);
-// });
+  const urlInfo = {
+    longUrl,
+    keyword,
+    shortUrl,
+    clicks,
+  };
+
+  //Create on BD
+  try {
+    await UrlInfo.create(urlInfo);
+
+    res.status(201).json({ message: "Saved with success" });
+  } catch (error) {
+    res.status(500).json({ error: error });
+  }
+});
 
 app.listen(3080, () => {
   console.log("server is running");
