@@ -3,13 +3,13 @@ const mongoose = require("mongoose");
 const UrlInfo = mongoose.model("UrlInfo", {
   longUrl: {
     type: String,
-    required: true,
+    required: false,
   },
   keyword: {
     type: String,
-    required: true,
+    required: false,
   },
-  short: {
+  shortUrl: {
     type: String,
     required: false,
   },
