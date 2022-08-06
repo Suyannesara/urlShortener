@@ -49,10 +49,23 @@ export default {
 
   methods: {
     save() {
-      console.log(this.urlInfo.longUrl);
+      this.verifyIfExistsOnDb();
       UrlInfo.save(this.urlInfo).then((res) => {
         console.log("Url encurtada com sucesso", res.data);
         this.showShortUrl();
+      });
+    },
+
+    verifyIfExistsOnDb() {
+      UrlInfo.list().then((res) => {
+        let data = res.data.shortUrls;
+        data.map((urlInfo) => {
+          if (urlInfo.keyword == this.urlInfo.keyword) {
+            alert(
+              `Ops :( ! \nParece que essa palavra-chave já está sendo utilizada em outra URL`
+            );
+          }
+        });
       });
     },
 
