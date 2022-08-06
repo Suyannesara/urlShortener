@@ -11,7 +11,7 @@
 
     <form @submit.prevent="save">
       <div>
-        <label for="long-url">URL</label>
+        <label for="long-url">Url</label>
         <input
           required
           v-model="urlInfo.longUrl"
@@ -22,7 +22,7 @@
       </div>
 
       <div>
-        <label for="keyword">Palavra-Chave</label> <br />
+        <label for="keyword">Palavra-chave</label> <br />
         <input
           required
           v-model="urlInfo.keyword"
@@ -35,10 +35,10 @@
       <button id="send-button" type="submit">Encurtar</button>
 
       <div>
-        <p for="short-url">Prontinho! Só copiar :)</p>
+        <p>Prontinho! Só copiar :)</p>
 
         <div class="copy-button">
-          <button onclick="copyText()">
+          <button type="button" @click="copyUrl">
             <img src="../assets/copyIcon.svg" alt="" />
           </button>
           <input v-bind:value="urlInfo.shortUrl" id="short-url" type="text" />
@@ -93,6 +93,18 @@ export default {
 
         this.urlInfo.shortUrl = data[last].shortUrl;
       });
+    },
+
+    copyUrl() {
+      let copiedUrl = document.getElementById("short-url");
+      if (copiedUrl.value == "") {
+        alert("Não tem nada para copiar ai! Gere a url encurtada primeiro");
+      } else {
+        copiedUrl.select();
+        copiedUrl.setSelectionRange(0, 99999);
+        document.execCommand("copy");
+        alert("Prontinho :) \nCopiamos para você");
+      }
     },
   },
 };

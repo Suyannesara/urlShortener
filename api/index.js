@@ -23,9 +23,6 @@ app.use((req, res, next) => {
 });
 
 // //Routes
-// app.get("/", (req, res) => {
-//   res.send("Oi guria");
-// });
 
 app.get("/", async (req, res) => {
   const shortUrls = await UrlInfo.find();
