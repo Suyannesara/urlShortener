@@ -88,6 +88,7 @@ export default {
             alert(
               `Ops :( ! \nParece que essa palavra-chave já está sendo utilizada em outra URL`
             );
+            document.getElementById("keyword").value = "";
           }
         });
       });

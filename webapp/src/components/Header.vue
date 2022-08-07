@@ -3,7 +3,7 @@
     <img src="../assets/logoLayers.png" alt="layers logo" />
     <nav>
       <router-link class="router-link" to="/">Encurtador</router-link>
-      <router-link class="router-link" to="/analysis">Analises</router-link>
+      <router-link class="router-link" to="/analysis">Análises</router-link>
     </nav>
   </header>
 </template>

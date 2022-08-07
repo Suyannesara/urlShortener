@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const UrlInfo = mongoose.model("UrlInfo", {
   longUrl: {
     type: String,
-    required: false,
+    required: true,
   },
   keyword: {
     type: String,
@@ -12,7 +12,7 @@ const UrlInfo = mongoose.model("UrlInfo", {
   },
   shortUrl: {
     type: String,
-    required: false,
+    required: true,
   },
   clicks: {
     type: Number,
