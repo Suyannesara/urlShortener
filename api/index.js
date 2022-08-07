@@ -56,10 +56,12 @@ app.post("/urlInfo", async (req, res) => {
 app.get("/:shortUrl", async (req, res) => {
   const shortUrl = await UrlInfo.findOne({ keyword: req.params.shortUrl });
   if (shortUrl == null) return res.sendStatus(404);
-  // shortUrl.clicks++;
-  // shortUrl.save();
 
-  // redirect to the longUrl
+  //Counting clicks of links
+  shortUrl.clicks++;
+  shortUrl.save();
+
+  //Redirect to the longUrl
   res.redirect(shortUrl.longUrl);
 });
 

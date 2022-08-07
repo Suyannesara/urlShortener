@@ -17,8 +17,12 @@ header {
   align-items: center;
 }
 
+header img {
+  padding-left: 10%;
+}
+
 nav .router-link {
-  padding-left: 15%;
+  padding-left: 30%;
   color: #ffff;
   text-decoration: none;
 }

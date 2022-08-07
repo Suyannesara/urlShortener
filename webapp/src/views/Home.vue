@@ -1,6 +1,8 @@
 <template>
-  <Header id="header"></Header>
-  <Form></Form>
+  <div>
+    <Header></Header>
+    <Form></Form>
+  </div>
 </template>
 
 <script>
@@ -15,6 +17,7 @@ export default {
     Header,
   },
 
+  // NOT NEEDED
   mounted() {
     UrlInfo.list().then((res) => {
       console.log(res.data);

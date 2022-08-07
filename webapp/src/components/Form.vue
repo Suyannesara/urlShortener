@@ -66,11 +66,18 @@ export default {
 
   methods: {
     save() {
+      this.replaceInputSpaces();
       this.verifyIfExistsOnDb();
+
       UrlInfo.save(this.urlInfo).then((res) => {
         console.log("Url encurtada com sucesso", res.data);
         this.showShortUrl();
       });
+    },
+
+    //In case of user send a keyword with spaces
+    replaceInputSpaces() {
+      this.urlInfo.keyword = this.urlInfo.keyword.replace(/\s/g, "_");
     },
 
     verifyIfExistsOnDb() {

@@ -1,27 +1,20 @@
 <template>
   <div>
-    <Header id="header"></Header>
-
+    <Header></Header>
+    <p id="explanation">
+      Urls organizadas de acordo com quantidade de acessos. <br />
+      Assim você pode saber os tópicos de maior relevância <br />
+      para seu público :D.
+    </p>
     <div class="urls-container">
-      <div class="url-card">
+      <div v-for="urlData in this.urlsData" class="url-card">
         <details>
-          <summary>FLL</summary>
+          <summary>{{ urlData.keyword }}</summary>
           <div class="hide-info">
-            <p>https://layers.com</p>
-            <p>220</p>
-            <p>07.08.22</p>
-            <img src="" alt="Url activity" />
-          </div>
-        </details>
-      </div>
-      <div class="url-card">
-        <details>
-          <summary>FLL</summary>
-          <div class="hide-info">
-            <p>https://layers.com</p>
-            <p>220</p>
-            <p>07.08.22</p>
-            <img src="" alt="Url activity" />
+            <p>{{ urlData.shortUrl }}</p>
+            <p>
+              clicks: <span>{{ urlData.clicks }}</span>
+            </p>
           </div>
         </details>
       </div>
@@ -30,6 +23,7 @@
 </template>
 
 <script>
+import urlInfo from "@/services/urlInfo";
 import Header from "../components/Header.vue";
 
 export default {
@@ -38,21 +32,46 @@ export default {
     Header,
   },
   data() {
-    return {};
+    return {
+      urlsData: [],
+    };
+  },
+
+  mounted() {
+    urlInfo.list().then((res) => {
+      let urlsData = res.data.shortUrls;
+
+      if (urlsData.length == 0) {
+        document.getElementById("explanation").innerText =
+          'Ainda não há nada por aqui! Cadastre uma url na página "Encurtador" ';
+      }
+
+      //Ordering info by numbers off clicks
+      urlsData.sort((urlA, urlB) => {
+        if (urlA.clicks > urlB.clicks) {
+          return -1;
+        }
+      });
+
+      this.urlsData = urlsData;
+    });
   },
 };
 </script>
 
 <style scoped>
+#explanation {
+  color: #ffff;
+  line-height: 1.5em;
+}
+
 .urls-container {
   width: 400px;
   height: 85vh;
-
-  margin-top: 5%;
 }
 
 .url-card {
-  width: 100%;
+  width: 400px;
   height: fit-content;
   margin-bottom: 2%;
 
@@ -69,6 +88,21 @@ details {
 .hide-info {
   display: flex;
 
-  align-items: center;
+  justify-content: space-between;
+  padding: 0px 40px 0px 20px;
+}
+
+summary {
+  font-weight: 500;
+}
+
+.hide-info p {
+  font-weight: 400;
+  color: #cecece;
+}
+
+.hide-info span {
+  font-weight: 300;
+  color: #3f3f3f;
 }
 </style>
