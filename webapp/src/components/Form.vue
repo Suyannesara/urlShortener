@@ -112,10 +112,10 @@ export default {
 
 <style>
 .form {
-  width: 100%;
+  max-width: 600px;
   background-color: #ffff;
 
-  padding: 8%;
+  padding: 40px;
   color: #3f3f3f;
 
   box-shadow: 5px 10px 12px 2px rgba(0, 0, 0, 0.164);
