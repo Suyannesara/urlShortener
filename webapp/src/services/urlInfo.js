@@ -7,5 +7,4 @@ export default {
   save: (urlInfo) => {
     return http.post("urlInfo", urlInfo);
   },
-  disable: () => {},
 };

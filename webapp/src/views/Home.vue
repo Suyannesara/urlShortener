@@ -7,7 +7,6 @@
 
 <script>
 import Form from "../components/Form.vue";
-import UrlInfo from "../services/urlInfo";
 import Header from "../components/Header.vue";
 
 export default {
@@ -15,13 +14,6 @@ export default {
   components: {
     Form,
     Header,
-  },
-
-  // NOT NEEDED
-  mounted() {
-    UrlInfo.list().then((res) => {
-      console.log(res.data);
-    });
   },
 };
 </script>
