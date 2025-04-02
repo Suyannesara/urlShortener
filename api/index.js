@@ -68,7 +68,7 @@ app.get("/:shortUrl", async (req, res) => {
 });
 
 app.post("/register", async (req, res) => {
-  const {username, email, password}  = req.body
+  let {username, email, password}  = req.body
   if(!email || !password){
     return res.sendStatus(400).send("Faltam elementos para que o cadastro seja completo")
   }
@@ -79,6 +79,11 @@ app.post("/register", async (req, res) => {
     const usuarioExistente = await User.findOne({ email });
     if (usuarioExistente) {
       return res.status(409).json({ error: "E-mail já cadastrado" });
+    }
+
+    if (username == "") {
+      // gera o username com base no email
+      username = email.split("@")[0];
     }
 
     // Criptografar a senha
