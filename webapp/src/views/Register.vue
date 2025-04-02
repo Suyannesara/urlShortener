@@ -10,7 +10,7 @@
       <input v-model="email" type="email" placeholder="E-mail" required />
       <input v-model="password" type="password" placeholder="Senha" required />
   
-      <button @click="cadastrar">Cadastrar</button>
+      <button @click="register">Cadastrar</button>
   
       <p v-if="error" class="error">{{ error }}</p>
       <p v-if="success" class="success">{{ success }}</p>
@@ -30,7 +30,7 @@
       };
     },
     methods: {
-      async cadastrar() {
+      async register() {
         this.error = "";
         this.success = "";
   
@@ -47,11 +47,15 @@
             })
   
             this.success = resp.data.message
+
+            setTimeout(() => {
+                this.$router.push("/login"); 
+            }, 2000);
         } catch (err) {
           if (err.response.status === 409) {
             this.error = "E-mail já cadastrado!";
           } else {
-            this.error = "ErroR ao cadastrar. Tente novamente!";
+            this.error = "Error ao cadastrar. Tente novamente!";
           }
         }
       },
