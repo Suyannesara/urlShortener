@@ -18,6 +18,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 //Giving acess to frontend - CORS
 const cors = require("cors");
+const authenticateToken = require("./middlewares");
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "http://localhost:8080");
 
@@ -26,8 +27,8 @@ app.use((req, res, next) => {
 });
 
 //Routes
-
-app.get("/", async (req, res) => {
+app.get("/", authenticateToken, async (req, res) => {
+  // TODO: User só pode acessar as URLs associadas à ele
   const shortUrls = await UrlInfo.find();
   res.send({ shortUrls: shortUrls });
 });
@@ -115,7 +116,7 @@ app.post("/login", async (req, res) => {
       return res.status(400).send("E-mail ou senha incorretos");
     }
 
-    // Compara a senha fornecida com a senha armazenada (criptografada)
+    // Compara a senha fornecida com a senha criptografada
     const isPasswordCorrect = await bcrypt.compare(password, user.password);
     if (!isPasswordCorrect) {
       return res.status(400).send("E-mail ou senha incorretos");
@@ -124,11 +125,10 @@ app.post("/login", async (req, res) => {
     // Opcional: gerar token JWT
     const token = jwt.sign(
       { userId: user._id, email: user.email },
-      process.env.JWT_SECRET || "secreto", // use variáveis de ambiente em produção
+      process.env.JWT_SECRET, //todo: por essa variavel no ambiente prod
       { expiresIn: "1h" }
     );
 
-    // Envia resposta com token ou dados do usuário (sem a senha)
     res.status(200).json({
       message: "Login realizado com sucesso",
       user: {
