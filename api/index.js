@@ -4,6 +4,7 @@ const bcrypt = require('bcrypt');
 const connectToDb = require("./database");
 const UrlInfo = require("./models/UrlInfo");
 const User = require("./models/User");
+const jwt = require("jsonwebtoken");
 var bodyParser = require("body-parser");
 
 //connect to database
@@ -76,8 +77,8 @@ app.post("/register", async (req, res) => {
   try {
     // US2 - O banco de dados deve armazenar senhas criptografadas e garantir a unicidade dos e-mails
     // Verificar se o e-mail já existe
-    const usuarioExistente = await User.findOne({ email });
-    if (usuarioExistente) {
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
       return res.status(409).json({ error: "E-mail já cadastrado" });
     }
 
@@ -99,6 +100,49 @@ app.post("/register", async (req, res) => {
     return res.status(500).json({ error: error.message });
   }
 });
+
+app.post("/login", async (req, res) => {
+  let { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).send("Faltam elementos para realizar o login");
+  }
+
+  try {
+    // Verifica se o usuário existe
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).send("E-mail ou senha incorretos");
+    }
+
+    // Compara a senha fornecida com a senha armazenada (criptografada)
+    const isPasswordCorrect = await bcrypt.compare(password, user.password);
+    if (!isPasswordCorrect) {
+      return res.status(400).send("E-mail ou senha incorretos");
+    }
+
+    // Opcional: gerar token JWT
+    const token = jwt.sign(
+      { userId: user._id, email: user.email },
+      process.env.JWT_SECRET || "secreto", // use variáveis de ambiente em produção
+      { expiresIn: "1h" }
+    );
+
+    // Envia resposta com token ou dados do usuário (sem a senha)
+    res.status(200).json({
+      message: "Login realizado com sucesso",
+      user: {
+        id: user._id,
+        email: user.email,
+      },
+      token: token,
+    });
+
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+});
+
 
 app.listen(3080, () => {
   console.log("server is running");
