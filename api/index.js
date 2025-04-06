@@ -28,12 +28,15 @@ app.use((req, res, next) => {
 
 //Routes
 app.get("/", authenticateToken, async (req, res) => {
-  // TODO: User só pode acessar as URLs associadas à ele
-  const shortUrls = await UrlInfo.find();
-  res.send({ shortUrls: shortUrls });
+  try {
+    const shortUrls = await UrlInfo.find({ userId: req.user.userId });
+    res.send({ shortUrls });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
-app.post("/urlInfo", async (req, res) => {
+app.post("/urlInfo", authenticateToken, async (req, res) => {
   //extracting data from the body
   const { longUrl, keyword, clicks } = req.body;
 
@@ -45,6 +48,7 @@ app.post("/urlInfo", async (req, res) => {
     keyword,
     shortUrl,
     clicks,
+    userId: req.user.userId,
   };
 
   //Create on BD
