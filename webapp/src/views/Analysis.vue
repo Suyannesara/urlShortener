@@ -34,11 +34,27 @@ export default {
   data() {
     return {
       urlsData: [],
+      intervalId: null
     };
   },
 
   mounted() {
-    urlInfo.list().then((res) => {
+    this.loadUrls();
+
+    // Atualiza a cada 5 segundos as infos das urls
+    this.intervalId = setInterval(() => {
+      this.loadUrls();
+    }, 5000);
+  },
+
+  beforeDestroy() {
+    // limpa o intervalo ao sair do componente
+    clearInterval(this.intervalId);
+  },
+
+  methods: {
+    loadUrls(){
+      urlInfo.list().then((res) => {
       let urlsData = res.data.shortUrls;
 
       if (urlsData.length == 0) {
@@ -54,8 +70,9 @@ export default {
       });
 
       this.urlsData = urlsData;
-    });
-  },
+      });
+    }
+  }
 };
 </script>
 
