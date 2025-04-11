@@ -70,8 +70,8 @@ export default {
       this.verifyIfExistsOnDb();
 
       UrlInfo.save(this.urlInfo).then((res) => {
-        console.log("Url encurtada com sucesso", res.data);
         this.showShortUrl();
+        alert("Prontinho :) \nUrl encurtada com sucesso");
       });
     },
 
