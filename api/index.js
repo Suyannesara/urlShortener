@@ -55,7 +55,7 @@ app.post("/urlInfo", authenticateToken, async (req, res) => {
   const { longUrl, keyword, clicks } = req.body;
 
   //Generate shortUrl by the keyword
-  let shortUrl = `localhost:3080/${req.body.keyword}`;
+  let shortUrl = `${process.env.BACKEND_URL}/${req.body.keyword}`;
 
   let urlInfo = {
     longUrl,
@@ -162,6 +162,6 @@ app.post("/login", async (req, res) => {
 });
 
 
-app.listen(3080, () => {
+app.listen(process.env.BACKEND_URL, () => {
   console.log("server is running");
 });
