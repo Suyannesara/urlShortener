@@ -19,12 +19,26 @@ app.use(bodyParser.urlencoded({ extended: true }));
 //Giving acess to frontend - CORS
 const cors = require("cors");
 const authenticateToken = require("./middlewares");
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "http://localhost:8080");
 
-  app.use(cors());
-  next();
-});
+const allowedOrigins = [
+  "http://localhost:8080",
+  process.env.FRONTEND_URL,
+];
+
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      // Permitir requisições sem origin (ex: apps mobile ou curl)
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      } else {
+        return callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true, 
+  })
+);
 
 //Routes
 app.get("/", authenticateToken, async (req, res) => {
