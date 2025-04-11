@@ -162,6 +162,6 @@ app.post("/login", async (req, res) => {
 });
 
 
-app.listen(3080, () => {
+app.listen(process.env.BACKEND_URL, () => {
   console.log("server is running");
 });
