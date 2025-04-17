@@ -1,18 +1,23 @@
 <template>
-  <div class="container">
-    <h2>Login</h2>
+  <div class="page">
+    <h1 class="app-title">Encurtador de URL</h1>
+    <div class="container">
+      <h2>Login</h2>
 
-    <input v-model="email" type="email" placeholder="E-mail" required />
-    <input v-model="password" type="password" placeholder="Senha" required />
+      <form @submit.prevent="login">
+        <input v-model="email" type="email" placeholder="E-mail" required />
+        <input v-model="password" type="password" placeholder="Senha" required />
 
-    <button @click="login">Entrar</button>
-    <span>
-      Não tem uma conta ainda?
-      <a @click="goToRegister" class="register-link">Cadastre-se</a>
-    </span>
-    
+        <button type="submit">Entrar</button>
+      </form>
 
-    <p v-if="error" class="error">{{ error }}</p>
+      <span>
+        Não tem uma conta ainda?
+        <a @click="goToRegister" class="register-link">Cadastre-se</a>
+      </span>
+
+      <p v-if="error" class="error">{{ error }}</p>
+    </div>
   </div>
 </template>
 
@@ -58,64 +63,93 @@ export default {
 </script>
 
 <style scoped>
+.page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.app-title {
+  font-size: 26px;
+  color: #ffff;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
 .container {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
 
-
-  max-width: 500px;
-  margin: auto;
-  padding: 20px;
+  max-width: 300px;
+  margin: 50px auto;
+  padding: 30px;
   text-align: center;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+
+  border-radius: 12px;
+  background-color: #ffffffda;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+  color: #00b8ad;
+  margin-bottom: 20px;
 }
 
 input {
   width: 95%;
-  margin: 5px 0;
-  padding: 8px;
+  margin: 10px 0;
+  padding: 0px 8px;
   border: 1px solid #ccc;
-  border-radius: 4px;
+  border-radius: 6px;
+  font-size: 16px;
+  transition: border-color 0.3s ease;
+}
+
+input:focus {
+  border-color: #00b8ad;
+  outline: none;
 }
 
 button {
   width: 100%;
-  padding: 10px;
-  margin-top: 10px;
-  background-color: #007bff;
+  padding: 12px;
+  margin-top: 15px;
+  background-color: #00b8ad;
   color: white;
   border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 16px;
   cursor: pointer;
-}
-
-button.secondary {
-  background-color: #6c757d;
+  transition: background-color 0.3s ease;
 }
 
 button:hover {
-  background-color: #0056b3;
+  background-color: #008e87;
 }
 
-button.secondary:hover {
-  background-color: #5a6268;
+span {
+  margin-top: 15px;
+  font-size: 14px;
 }
 
 .register-link {
-  color: #007bff;
+  color: #00b8ad;
   cursor: pointer;
   text-decoration: underline;
   margin-left: 5px;
+  transition: color 0.3s ease;
 }
 
 .register-link:hover {
-  color: #0056b3;
+  color: #008e87;
 }
-
 
 .error {
   color: red;
+  margin-top: 10px;
 }
+
 </style>

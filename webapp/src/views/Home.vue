@@ -27,7 +27,7 @@ body {
   margin: 0;
 
   width: 100%;
-  height: 100%;
+  height: 100vh;
 
   background-color: #00b8ad;
   font-family: "Nunito", sans-serif;
@@ -38,7 +38,6 @@ body {
 
 #app {
   display: flex;
-  height: 100vh;
   width: 100%;
 
   flex-direction: column;

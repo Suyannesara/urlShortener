@@ -1,108 +1,173 @@
 <template>
+  <div class="page">
+    <h1 class="app-title">Encurtador de URL</h1>
     <div class="container">
       <h2>Cadastro</h2>
-  
+
       <div class="tooltip">
-        <input v-model="name" type="text" placeholder="Username" />
-        <span class="tooltiptext">Se você não quiser escolher um username, nós geraremos um automaticamente para você &#128522.</span>
+        <input v-model="name" type="text" placeholder="Nome de usuário" />
+        <span class="tooltiptext">
+          Se você não quiser escolher um nome de usuário, nós vamos gerar um automaticamente pra você &#128522;.
+        </span>
       </div>
-  
+
       <input v-model="email" type="email" placeholder="E-mail" required />
       <input v-model="password" type="password" placeholder="Senha" required />
-  
+
       <button @click="register">Cadastrar</button>
-  
+
       <p v-if="error" class="error">{{ error }}</p>
       <p v-if="success" class="success">{{ success }}</p>
+
+      <p class="login-link">
+        Já tem uma conta?
+        <router-link to="/login">Faça login</router-link>
+      </p>
     </div>
-  </template>
-  
-  <script>
-  import user from "@/services/user";
-  export default {
-    data() {
-      return {
-        name: "",
-        email: "",
-        password: "",
-        error: "",
-        success: "",
-      };
-    },
-    methods: {
-      async register() {
-        this.error = "";
-        this.success = "";
-  
-        if (!this.email || !this.password) {
-          this.error = "Preencha todos os campos!";
-          return;
-        }
-  
-        try {
-            const resp = await user.register({
-                username: this.name,
-                email: this.email,
-                password: this.password,
-            })
-  
-            this.success = resp.data.message
+  </div>
+</template>
 
-            setTimeout(() => {
-                this.$router.push("/login"); 
-            }, 2000);
-        } catch (err) {
-          if (err.response.status === 409) {
-            this.error = "E-mail já cadastrado!";
-          } else {
-            this.error = "Error ao cadastrar. Tente novamente!";
-          }
-        }
-      },
-    },
-  };
-  </script>
-  
-  <style scoped>
-  .container {
-    max-width: 300px;
-    margin: auto;
-    padding: 20px;
-    text-align: center;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  }
-  
-  input {
-    width: 100%;
-    margin: 5px 0;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-  }
-  
-  button {
-    width: 100%;
-    padding: 10px;
-    background-color: #28a745;
-    color: white;
-    border: none;
-    cursor: pointer;
-  }
-  
-  button:hover {
-    background-color: #218838;
-  }
-  
-  .error {
-    color: red;
-  }
-  
-  .success {
-    color: green;
-  }
+<script>
+import user from "@/services/user";
+export default {
+  data() {
+    return {
+      name: "",
+      email: "",
+      password: "",
+      error: "",
+      success: "",
+    };
+  },
+  methods: {
+    async register() {
+      this.error = "";
+      this.success = "";
 
-/* Estilização da tooltip */
+      if (!this.email || !this.password) {
+        this.error = "Preencha todos os campos!";
+        return;
+      }
+
+      try {
+        const resp = await user.register({
+          username: this.name,
+          email: this.email,
+          password: this.password,
+        });
+
+        this.success = resp.data.message;
+
+        setTimeout(() => {
+          this.$router.push("/login");
+        }, 2000);
+      } catch (err) {
+        if (err.response.status === 409) {
+          this.error = "E-mail já cadastrado!";
+        } else {
+          this.error = "Erro ao cadastrar. Tente novamente!";
+        }
+      }
+    },
+  },
+};
+</script>
+
+<style scoped>
+.page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.app-title {
+  font-size: 26px;
+  color: #ffff;
+  font-weight: bold;
+  margin-top: 20px;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 300px;
+  max-width: 500px;
+  margin: 50px auto;
+  padding: 30px;
+  text-align: center;
+
+  border-radius: 12px;
+  background-color: #ffffffda;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+  color: #00b8ad;
+  margin-bottom: 20px;
+}
+
+input {
+  width: 92%;
+  margin: 10px 0;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 16px;
+  transition: border-color 0.3s ease;
+}
+
+input:focus {
+  border-color: #00b8ad;
+  outline: none;
+}
+
+button {
+  width: 100%;
+  padding: 12px;
+  margin-top: 15px;
+  background-color: #00b8ad;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #008e87;
+}
+
+.error {
+  color: red;
+  margin-top: 10px;
+}
+
+.success {
+  color: green;
+  margin-top: 10px;
+}
+
+.login-link {
+  margin-top: 15px;
+  font-size: 14px;
+}
+
+.login-link a {
+  color: #00b8ad;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.login-link a:hover {
+  text-decoration: underline;
+}
+
+/* Tooltip estilizada */
 .tooltip {
   position: relative;
   display: inline-block;
@@ -111,40 +176,35 @@
 
 .tooltiptext {
   visibility: hidden;
-  width: 220px;
-  background-color: black;
+  width: 240px;
+  background-color: #000000cc;
   color: #fff;
   text-align: center;
-  padding: 5px;
-  border-radius: 4px;
+  padding: 8px;
+  border-radius: 6px;
+  font-size: 14px;
 
-  /* Posicionamento */
   position: absolute;
   bottom: 130%;
   left: 50%;
   transform: translateX(-50%);
-  
-  /* Efeito fade-in */
   opacity: 0;
-  transition: opacity 0.3s;
+  transition: opacity 0.4s ease;
 }
 
-/* Flecha da tooltip */
 .tooltiptext::after {
   content: "";
   position: absolute;
-  top: 100%; /* Posiciona a flecha abaixo da tooltip */
+  top: 100%;
   left: 50%;
-  margin-left: -5px;
-  border-width: 5px;
+  margin-left: -6px;
+  border-width: 6px;
   border-style: solid;
-  border-color: black transparent transparent transparent;
+  border-color: #000000cc transparent transparent transparent;
 }
 
-/* Mostrar tooltip ao passar o mouse */
 .tooltip:hover .tooltiptext {
   visibility: visible;
   opacity: 1;
 }
 </style>
-  

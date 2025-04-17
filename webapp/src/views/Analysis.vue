@@ -11,7 +11,8 @@
         <details>
           <summary>{{ urlData.keyword }}</summary>
           <div class="hide-info">
-            <p>{{ urlData.shortUrl }}</p>
+            <!-- Torna a URL clicável -->
+            <p><a :href="urlData.shortUrl" target="_blank">{{ urlData.shortUrl }}</a></p>
             <p>
               clicks: <span>{{ urlData.clicks }}</span>
             </p>
@@ -103,10 +104,11 @@ details {
 }
 
 .hide-info {
-  display: flex;
-
-  justify-content: space-between;
   padding: 0px 40px 0px 20px;
+  max-height: 300px; /* Opcional, define a altura máxima para evitar que a div cresça demais */
+  overflow-y: auto; /* Permite o scroll vertical caso o conteúdo seja maior que a altura definida */
+  word-wrap: break-word; /* Garante que palavras longas serão quebradas */
+  overflow-wrap: break-word; /* Suporte adicional para a quebra de palavras */
 }
 
 summary {
@@ -121,5 +123,14 @@ summary {
 .hide-info span {
   font-weight: 300;
   color: #3f3f3f;
+}
+
+.hide-info a {
+  color: #007BFF; /* Cor azul para o link */
+  text-decoration: none; /* Remove o sublinhado do link */
+}
+
+.hide-info a:hover {
+  text-decoration: underline; /* Adiciona o sublinhado no hover para indicar que é clicável */
 }
 </style>
