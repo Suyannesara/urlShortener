@@ -65,33 +65,27 @@ export default {
   },
 
   methods: {
-    save() {
+    async save() {
       this.replaceInputSpaces();
-      this.verifyIfExistsOnDb();
 
-      UrlInfo.save(this.urlInfo).then((res) => {
+      try {
+        await UrlInfo.save(this.urlInfo)
         this.showShortUrl();
         alert("Prontinho :) \nUrl encurtada com sucesso");
-      });
+      } catch (error) {
+        if(error.response.status == 400){
+          alert(`Ops :( ! \nParece que você já usou essa palavra-chave em outra URL`);
+          document.getElementById("keyword").value = "";
+          return
+        }
+
+        alert("Erro ao salvar sua URL :(")
+      }
     },
 
     //In case of user send a keyword with spaces
     replaceInputSpaces() {
       this.urlInfo.keyword = this.urlInfo.keyword.replace(/\s/g, "_");
-    },
-
-    verifyIfExistsOnDb() {
-      UrlInfo.list().then((res) => {
-        let data = res.data.shortUrls;
-        data.map((urlInfo) => {
-          if (urlInfo.keyword == this.urlInfo.keyword) {
-            alert(
-              `Ops :( ! \nParece que essa palavra-chave já está sendo utilizada em outra URL`
-            );
-            document.getElementById("keyword").value = "";
-          }
-        });
-      });
     },
 
     showShortUrl() {

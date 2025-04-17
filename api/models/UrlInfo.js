@@ -8,7 +8,6 @@ const UrlInfo = mongoose.model("UrlInfo", {
   keyword: {
     type: String,
     required: true,
-    unique: true,
   },
   shortUrl: {
     type: String,

@@ -55,7 +55,7 @@ app.post("/urlInfo", authenticateToken, async (req, res) => {
   const { longUrl, keyword, clicks } = req.body;
 
   //Generate shortUrl by the keyword
-  let shortUrl = `${process.env.BACKEND_URL}/${req.body.keyword}`;
+  let shortUrl = `${process.env.BACKEND_URL}/${req.user.userId}/${req.body.keyword}`;
 
   let urlInfo = {
     longUrl,
@@ -67,11 +67,20 @@ app.post("/urlInfo", authenticateToken, async (req, res) => {
 
   //Create on BD
   try {
+    const exists = await UrlInfo.findOne({
+      userId: req.user.userId,
+      keyword: keyword
+    });
+  
+    if (exists) {
+      return res.status(400).json({ message: "Essa palavra-chave já foi usada por você." });
+    }
+    
     await UrlInfo.create(urlInfo);
 
     res.status(201).json({ message: "Saved with success" });
   } catch (error) {
-    res.status(500).json({ error: error });
+    res.status(500).json({ message: "Erro ao criar a url"});
   }
 });
 
