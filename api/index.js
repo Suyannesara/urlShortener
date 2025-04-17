@@ -84,17 +84,24 @@ app.post("/urlInfo", authenticateToken, async (req, res) => {
   }
 });
 
-app.get("/:shortUrl", async (req, res) => {
-  const shortUrl = await UrlInfo.findOne({ keyword: req.params.shortUrl });
-  if (shortUrl == null) return res.sendStatus(404);
+app.get("/:userId/:shortUrl", async (req, res) => {
+  const { userId, shortUrl } = req.params;
+  
+  const urlInfo = await UrlInfo.findOne({
+    userId: userId,
+    keyword: shortUrl
+  });
 
-  //Counting clicks of links
-  shortUrl.clicks++;
-  shortUrl.save();
+  if (!urlInfo) {
+    return res.sendStatus(404);
+  }
 
-  //Redirect to the longUrl
-  res.redirect(shortUrl.longUrl);
+  urlInfo.clicks++;
+  await urlInfo.save();
+
+  res.redirect(urlInfo.longUrl);
 });
+
 
 app.post("/register", async (req, res) => {
   let {username, email, password}  = req.body
