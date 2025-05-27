@@ -22,6 +22,14 @@ const UrlInfo = mongoose.model("UrlInfo", {
     ref: "User",
     required: true,
   },
+  createdAt: { 
+    type: Date, 
+    default: Date.now 
+  },
+  expiresAt: { 
+    type: Date, 
+    default: null 
+  }
 });
 
 module.exports = UrlInfo;

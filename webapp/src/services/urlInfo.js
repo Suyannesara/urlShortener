@@ -9,5 +9,8 @@ export default {
   },
   delete: (keyword) => {
     return http.delete(`urlInfo/${keyword}`);
+  },
+  edit: (keyword, data) => {
+    return http.put(`urlInfo/${keyword}`, data);
   }  
 };

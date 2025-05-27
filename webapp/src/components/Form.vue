@@ -32,6 +32,11 @@
         />
       </div>
 
+      <div>
+        <label for="expiration-date">Data de Expiração (Opcional)</label> <br/>
+        <input type="date" v-model="expiresAt" placeholder="Data de validade (opcional)" />
+      </div>
+
       <button id="send-button" type="submit">Encurtar</button>
 
       <div>
@@ -61,6 +66,7 @@ export default {
         shortUrl: "",
         keyword: "",
       },
+      expiresAt: ""
     };
   },
 
@@ -69,6 +75,10 @@ export default {
       this.replaceInputSpaces();
 
       try {
+        this.urlInfo = {
+          ...this.urlInfo,
+          expiresAt: this.expiresAt ? new Date(this.expiresAt) : null
+        }
         await UrlInfo.save(this.urlInfo)
         this.showShortUrl();
         alert("Prontinho :) \nUrl encurtada com sucesso");

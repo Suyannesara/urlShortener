@@ -52,7 +52,7 @@ app.get("/", authenticateToken, async (req, res) => {
 
 app.post("/urlInfo", authenticateToken, async (req, res) => {
   //extracting data from the body
-  const { longUrl, keyword, clicks } = req.body;
+  const { longUrl, keyword, clicks, expiresAt } = req.body;
 
   //Generate shortUrl by the keyword
   let shortUrl = `${process.env.BACKEND_URL}/${req.user.userId}/${req.body.keyword}`;
@@ -63,6 +63,7 @@ app.post("/urlInfo", authenticateToken, async (req, res) => {
     shortUrl,
     clicks,
     userId: req.user.userId,
+    expiresAt: expiresAt ? new Date(expiresAt) : null
   };
 
   //Create on BD
@@ -93,7 +94,11 @@ app.get("/:userId/:shortUrl", async (req, res) => {
   });
 
   if (!urlInfo) {
-    return res.sendStatus(404);
+    return res.status(404).send("URL não encontrada.");
+  }
+
+  if (urlInfo.expiresAt && new Date() > urlInfo.expiresAt) {
+    return res.status(410).send("Esta URL expirou.");
   }
 
   urlInfo.clicks++;
@@ -198,6 +203,52 @@ app.delete("/urlInfo/:keyword", authenticateToken, async (req, res) => {
     res.status(500).json({ error: "Erro ao excluir a URL." });
   }
 });
+
+app.put("/urlInfo/:keyword", authenticateToken, async (req, res) => {
+  const { keyword } = req.params;
+  const { newLongUrl, newKeyword, expiresAt } = req.body;
+
+  try {
+    const urlInfo = await UrlInfo.findOne({
+      userId: req.user.userId,
+      keyword: keyword
+    });
+
+    if (!urlInfo) {
+      return res.status(404).json({ message: "URL não encontrada." });
+    }
+
+    // Se quiser mudar a keyword, verifica se ela já está em uso
+    if (newKeyword && newKeyword !== keyword) {
+      const keywordExists = await UrlInfo.findOne({
+        userId: req.user.userId,
+        keyword: newKeyword,
+      });
+      if (keywordExists) {
+        return res.status(400).json({ message: "Essa nova palavra-chave já está em uso." });
+      }
+      urlInfo.keyword = newKeyword;
+      urlInfo.shortUrl = `${process.env.BACKEND_URL}/${req.user.userId}/${newKeyword}`;
+      console.log(expiresAt)
+      if (expiresAt !== undefined) {
+        console.log("aquiii")
+        urlInfo.expiresAt = expiresAt ? new Date(expiresAt) : null;
+      }
+    }
+
+    // Atualiza o longUrl, se fornecido
+    if (newLongUrl) {
+      urlInfo.longUrl = newLongUrl;
+    }
+
+    await urlInfo.save();
+
+    res.status(200).json({ message: "URL atualizada com sucesso.", urlInfo });
+  } catch (error) {
+    res.status(500).json({ error: "Erro ao atualizar a URL." });
+  }
+});
+
 
 
 app.listen(3080, () => {

@@ -10,13 +10,39 @@
       <div v-for="urlData in this.urlsData" :key="urlData.keyword" class="url-card">
         <details>
           <summary>{{ urlData.keyword }}</summary>
+          <!-- Substitua o conteúdo do <div class="hide-info"> pelo seguinte -->
           <div class="hide-info">
-            <p><a :href="urlData.shortUrl" target="_blank">{{ urlData.shortUrl }}</a></p>
-            <p>clicks: <span>{{ urlData.clicks }}</span></p>
+            <p>
+              <a :href="urlData.shortUrl" target="_blank">{{ urlData.shortUrl }}</a>
+              <!-- Botão de edição (ícone de lápis) -->
+              <button @click="startEditing(urlData)" class="edit-btn">🖉</button>
+            </p>
+
+            <p v-if="urlData.expiresAt && editingKeyword !== urlData.keyword">
+            Expira em: <span>{{ new Date(urlData.expiresAt).toLocaleDateString() }}</span>
+          </p>
+
+          <!-- Campos de edição -->
+          <div v-if="editingKeyword === urlData.keyword">
+            <input
+              v-model="newLongUrl"
+              placeholder="Nova URL longa"
+              class="edit-input"
+            />
+            <input
+              v-model="newExpiresAt"
+              type="date"
+              class="edit-input"
+              placeholder="Nova data de expiração"
+            />
+            <button @click="saveEdit(urlData.keyword)">Salvar</button>
+            <button @click="cancelEdit">Cancelar</button>
+          </div>
 
             <!-- Botão de deletar -->
             <button @click="deleteUrl(urlData.keyword)">🗑️ Deletar</button>
           </div>
+
         </details>
       </div>
     </div>
@@ -35,7 +61,10 @@ export default {
   data() {
     return {
       urlsData: [],
-      intervalId: null
+      intervalId: null,
+      editingKeyword: null,
+      newLongUrl: "",
+      newExpiresAt: ""
     };
   },
 
@@ -53,6 +82,8 @@ export default {
     clearInterval(this.intervalId);
   },
 
+
+
   methods: {
     loadUrls() {
       urlInfo.list().then((res) => {
@@ -63,12 +94,7 @@ export default {
             'Ainda não há nada por aqui! Cadastre uma url na página "Encurtador" ';
         }
 
-        //Ordering info by numbers off clicks
-        urlsData.sort((urlA, urlB) => {
-          if (urlA.clicks > urlB.clicks) {
-            return -1;
-          }
-        });
+        urlsData.sort((urlA, urlB) => urlB.clicks - urlA.clicks);
 
         this.urlsData = urlsData;
       });
@@ -80,14 +106,42 @@ export default {
 
       try {
         await urlInfo.delete(keyword);
-        this.loadUrls(); // Atualiza a lista após deletar
+        this.loadUrls();
       } catch (error) {
         alert("Erro ao deletar a URL.");
         console.error(error);
       }
-    }
+    },
 
+    startEditing(urlData) {
+      this.editingKeyword = urlData.keyword;
+      this.newLongUrl = urlData.longUrl;
+    },
+
+    cancelEdit() {
+      this.editingKeyword = null;
+      this.newLongUrl = "";
+    },
+
+    async saveEdit(keyword) {
+      if (!this.newLongUrl) {
+        alert("A nova URL não pode estar vazia.");
+        return;
+      }
+
+      try {
+        console.log(this.newExpiresAt)
+        console.log(urlInfo)
+        await urlInfo.edit(keyword, { longUrl: this.newLongUrl, expiresAt: this.newExpiresAt });
+        this.cancelEdit();
+        this.loadUrls();
+      } catch (error) {
+        alert("Erro ao editar a URL.");
+        console.error(error);
+      }
+    }
   }
+
 };
 </script>
 
@@ -120,13 +174,9 @@ details {
 .hide-info {
   padding: 0px 40px 0px 20px;
   max-height: 300px;
-  /* Opcional, define a altura máxima para evitar que a div cresça demais */
   overflow-y: auto;
-  /* Permite o scroll vertical caso o conteúdo seja maior que a altura definida */
   word-wrap: break-word;
-  /* Garante que palavras longas serão quebradas */
   overflow-wrap: break-word;
-  /* Suporte adicional para a quebra de palavras */
 }
 
 summary {
@@ -145,14 +195,11 @@ summary {
 
 .hide-info a {
   color: #007BFF;
-  /* Cor azul para o link */
   text-decoration: none;
-  /* Remove o sublinhado do link */
 }
 
 .hide-info a:hover {
   text-decoration: underline;
-  /* Adiciona o sublinhado no hover para indicar que é clicável */
 }
 
 .hide-info button {
@@ -169,4 +216,22 @@ summary {
   background-color: #c82333;
 }
 
+.edit-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  margin-left: 10px;
+}
+
+.edit-btn:hover {
+  color: #007BFF;
+}
+
+.edit-input {
+  padding: 4px;
+  margin: 4px 0;
+  width: 100%;
+  box-sizing: border-box;
+}
 </style>
