@@ -177,6 +177,28 @@ app.post("/login", async (req, res) => {
   }
 });
 
+app.delete("/urlInfo/:keyword", authenticateToken, async (req, res) => {
+  const { keyword } = req.params;
+
+  try {
+    // Verifica se existe uma URL com esse keyword associada ao usuário autenticado
+    const urlInfo = await UrlInfo.findOne({
+      userId: req.user.userId,
+      keyword: keyword,
+    });
+
+    if (!urlInfo) {
+      return res.status(404).json({ message: "URL não encontrada." });
+    }
+
+    await UrlInfo.deleteOne({ _id: urlInfo._id });
+
+    res.status(200).json({ message: "URL excluída com sucesso." });
+  } catch (error) {
+    res.status(500).json({ error: "Erro ao excluir a URL." });
+  }
+});
+
 
 app.listen(3080, () => {
   console.log("server is running");

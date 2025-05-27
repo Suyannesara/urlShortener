@@ -7,15 +7,15 @@
       para seu público :D.
     </p>
     <div class="urls-container">
-      <div v-for="urlData in this.urlsData" class="url-card">
+      <div v-for="urlData in this.urlsData" :key="urlData.keyword" class="url-card">
         <details>
           <summary>{{ urlData.keyword }}</summary>
           <div class="hide-info">
-            <!-- Torna a URL clicável -->
             <p><a :href="urlData.shortUrl" target="_blank">{{ urlData.shortUrl }}</a></p>
-            <p>
-              clicks: <span>{{ urlData.clicks }}</span>
-            </p>
+            <p>clicks: <span>{{ urlData.clicks }}</span></p>
+
+            <!-- Botão de deletar -->
+            <button @click="deleteUrl(urlData.keyword)">🗑️ Deletar</button>
           </div>
         </details>
       </div>
@@ -54,25 +54,39 @@ export default {
   },
 
   methods: {
-    loadUrls(){
+    loadUrls() {
       urlInfo.list().then((res) => {
-      let urlsData = res.data.shortUrls;
+        let urlsData = res.data.shortUrls;
 
-      if (urlsData.length == 0) {
-        document.getElementById("explanation").innerText =
-          'Ainda não há nada por aqui! Cadastre uma url na página "Encurtador" ';
-      }
-
-      //Ordering info by numbers off clicks
-      urlsData.sort((urlA, urlB) => {
-        if (urlA.clicks > urlB.clicks) {
-          return -1;
+        if (urlsData.length == 0) {
+          document.getElementById("explanation").innerText =
+            'Ainda não há nada por aqui! Cadastre uma url na página "Encurtador" ';
         }
-      });
 
-      this.urlsData = urlsData;
+        //Ordering info by numbers off clicks
+        urlsData.sort((urlA, urlB) => {
+          if (urlA.clicks > urlB.clicks) {
+            return -1;
+          }
+        });
+
+        this.urlsData = urlsData;
       });
+    },
+
+    async deleteUrl(keyword) {
+      const confirmDelete = confirm("Tem certeza que deseja deletar esta URL?");
+      if (!confirmDelete) return;
+
+      try {
+        await urlInfo.delete(keyword);
+        this.loadUrls(); // Atualiza a lista após deletar
+      } catch (error) {
+        alert("Erro ao deletar a URL.");
+        console.error(error);
+      }
     }
+
   }
 };
 </script>
@@ -105,10 +119,14 @@ details {
 
 .hide-info {
   padding: 0px 40px 0px 20px;
-  max-height: 300px; /* Opcional, define a altura máxima para evitar que a div cresça demais */
-  overflow-y: auto; /* Permite o scroll vertical caso o conteúdo seja maior que a altura definida */
-  word-wrap: break-word; /* Garante que palavras longas serão quebradas */
-  overflow-wrap: break-word; /* Suporte adicional para a quebra de palavras */
+  max-height: 300px;
+  /* Opcional, define a altura máxima para evitar que a div cresça demais */
+  overflow-y: auto;
+  /* Permite o scroll vertical caso o conteúdo seja maior que a altura definida */
+  word-wrap: break-word;
+  /* Garante que palavras longas serão quebradas */
+  overflow-wrap: break-word;
+  /* Suporte adicional para a quebra de palavras */
 }
 
 summary {
@@ -126,11 +144,29 @@ summary {
 }
 
 .hide-info a {
-  color: #007BFF; /* Cor azul para o link */
-  text-decoration: none; /* Remove o sublinhado do link */
+  color: #007BFF;
+  /* Cor azul para o link */
+  text-decoration: none;
+  /* Remove o sublinhado do link */
 }
 
 .hide-info a:hover {
-  text-decoration: underline; /* Adiciona o sublinhado no hover para indicar que é clicável */
+  text-decoration: underline;
+  /* Adiciona o sublinhado no hover para indicar que é clicável */
 }
+
+.hide-info button {
+  margin-top: 10px;
+  padding: 6px 12px;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.hide-info button:hover {
+  background-color: #c82333;
+}
+
 </style>
