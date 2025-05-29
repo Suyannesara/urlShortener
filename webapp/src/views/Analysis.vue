@@ -19,7 +19,7 @@
             </p>
 
             <p v-if="urlData.expiresAt && editingKeyword !== urlData.keyword">
-            Expira em: <span>{{ new Date(urlData.expiresAt).toLocaleDateString() }}</span>
+            Expira em: <span>{{ new Date(urlData.expiresAt).toLocaleDateString('pt-BR', { timeZone: 'UTC' }) }}</span>
           </p>
 
           <!-- Campos de edição -->
@@ -68,12 +68,12 @@ export default {
     };
   },
 
-  mounted() {
-    this.loadUrls();
+  async mounted() {
+    await this.loadUrls();
 
     // Atualiza a cada 5 segundos as infos das urls
-    this.intervalId = setInterval(() => {
-      this.loadUrls();
+    this.intervalId = setInterval(async() => {
+      await this.loadUrls();
     }, 5000);
   },
 
@@ -85,8 +85,9 @@ export default {
 
 
   methods: {
-    loadUrls() {
-      urlInfo.list().then((res) => {
+    async loadUrls() {
+      try {
+        const res = await urlInfo.list()
         let urlsData = res.data.shortUrls;
 
         if (urlsData.length == 0) {
@@ -97,7 +98,9 @@ export default {
         urlsData.sort((urlA, urlB) => urlB.clicks - urlA.clicks);
 
         this.urlsData = urlsData;
-      });
+      } catch (error) {
+        console.log(error)
+      }
     },
 
     async deleteUrl(keyword) {
@@ -106,7 +109,7 @@ export default {
 
       try {
         await urlInfo.delete(keyword);
-        this.loadUrls();
+        await this.loadUrls();
       } catch (error) {
         alert("Erro ao deletar a URL.");
         console.error(error);
@@ -116,11 +119,14 @@ export default {
     startEditing(urlData) {
       this.editingKeyword = urlData.keyword;
       this.newLongUrl = urlData.longUrl;
+      this.newExpiresAt = urlData.expiresAt;
+
     },
 
     cancelEdit() {
       this.editingKeyword = null;
       this.newLongUrl = "";
+      this.newExpiresAt = "";
     },
 
     async saveEdit(keyword) {
@@ -130,11 +136,9 @@ export default {
       }
 
       try {
-        console.log(this.newExpiresAt)
-        console.log(urlInfo)
         await urlInfo.edit(keyword, { longUrl: this.newLongUrl, expiresAt: this.newExpiresAt });
         this.cancelEdit();
-        this.loadUrls();
+        await this.loadUrls();
       } catch (error) {
         alert("Erro ao editar a URL.");
         console.error(error);

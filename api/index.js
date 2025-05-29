@@ -229,14 +229,14 @@ app.put("/urlInfo/:keyword", authenticateToken, async (req, res) => {
       }
       urlInfo.keyword = newKeyword;
       urlInfo.shortUrl = `${process.env.BACKEND_URL}/${req.user.userId}/${newKeyword}`;
-      console.log(expiresAt)
-      if (expiresAt !== undefined) {
-        console.log("aquiii")
-        urlInfo.expiresAt = expiresAt ? new Date(expiresAt) : null;
-      }
     }
 
-    // Atualiza o longUrl, se fornecido
+    if (expiresAt) {
+      console.log(new Date(expiresAt))
+      console.log({expiresAt})
+      urlInfo.expiresAt = expiresAt ? new Date(expiresAt) : null;
+    }
+
     if (newLongUrl) {
       urlInfo.longUrl = newLongUrl;
     }
@@ -245,6 +245,7 @@ app.put("/urlInfo/:keyword", authenticateToken, async (req, res) => {
 
     res.status(200).json({ message: "URL atualizada com sucesso.", urlInfo });
   } catch (error) {
+    // console.log(error)
     res.status(500).json({ error: "Erro ao atualizar a URL." });
   }
 });
