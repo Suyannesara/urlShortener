@@ -232,8 +232,6 @@ app.put("/urlInfo/:keyword", authenticateToken, async (req, res) => {
     }
 
     if (expiresAt) {
-      console.log(new Date(expiresAt))
-      console.log({expiresAt})
       urlInfo.expiresAt = expiresAt ? new Date(expiresAt) : null;
     }
 
@@ -245,7 +243,6 @@ app.put("/urlInfo/:keyword", authenticateToken, async (req, res) => {
 
     res.status(200).json({ message: "URL atualizada com sucesso.", urlInfo });
   } catch (error) {
-    // console.log(error)
     res.status(500).json({ error: "Erro ao atualizar a URL." });
   }
 });
