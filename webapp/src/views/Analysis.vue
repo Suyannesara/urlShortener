@@ -18,6 +18,8 @@
               <button @click="startEditing(urlData)" class="edit-btn">🖉</button>
             </p>
 
+            <p>Cliques: <span>{{ urlData.clicks }}</span></p>
+
             <p v-if="urlData.expiresAt && editingKeyword !== urlData.keyword">
             Expira em: <span>{{ new Date(urlData.expiresAt).toLocaleDateString('pt-BR', { timeZone: 'UTC' }) }}</span>
           </p>
