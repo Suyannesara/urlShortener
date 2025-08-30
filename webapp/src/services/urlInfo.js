@@ -7,4 +7,10 @@ export default {
   save: (urlInfo) => {
     return http.post("urlInfo", urlInfo);
   },
+  delete: (keyword) => {
+    return http.delete(`urlInfo/${keyword}`);
+  },
+  edit: (keyword, data) => {
+    return http.put(`urlInfo/${keyword}`, data);
+  }  
 };
